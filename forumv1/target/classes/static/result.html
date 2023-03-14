@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
+
+    <style>
+        .layout-header{
+            background-color: steelblue;
+            height: 100px !important;
+            position: absolute;
+            top:0;
+            bottom: 0;
+            left: 0;
+            right: 0;
+
+        }
+        .layout-header h1{
+            color: black;
+            text-align: center;
+            line-height: 20px;
+        }
+        a{
+            text-decoration: none;
+        }
+        .login{
+            position: fixed;
+            top: 5px;
+            right: 50px;
+
+        }
+
+        .layout-body {
+            position: absolute;
+            top:100px;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .layout-aside {
+            background-color: #545c64;
+            width: 200px !important;
+
+        }
+        .layout-aside h2{
+            text-align: center;
+            margin: 20px 0 auto;
+            color: black;
+
+
+        }
+
+        .layout-main {
+            color: #333;
+            background-color: cornflowerblue;
+
+
+        }
+        .layout-card {
+            margin: 50px 0 auto !important;
+            width: 370px;
+            height: 100px;
+            padding: 0;
+        }
+        .layout-card h3{
+            margin: 0;
+            text-align: center;
+        }
+
+        .layout-footer{
+
+        }
+
+        body > .el-container {
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+<div id="app">
+    <el-container>
+        <el-header class="layout-header">
+            <h1>聊天論壇</h1>
+            <a href="/"><b style="font-size: 25px;color: black"  ><i class="el-icon-s-home">回首頁</i></b></a>
+            <div style=" float:right;" >
+                <el-input placeholder="請輸入搜索內容" @keydown.native.enter="search()" v-model="wd">
+                    <!--slot="append"作用是把按钮追加在文本框里面-->
+                    <el-button @click="search()" slot="append" icon="el-icon-search"></el-button>
+                </el-input>
+            </div>
+            <div class="login"  v-if="isLogin">
+                <b>歡迎{{user.nickname}}回來</b>
+                <a href="javascript:void (0)" @click="logout()">登出</a><br>
+                <a href="/send.html">發表文章</a>
+            </div>
+            <div class="login"  v-else style="top:25px">
+                <a href="/reg.html">立即註冊</a>
+                <a href="/login.html">登入</a>
+            </div>
+        </el-header>
+        <el-container class="layout-body">
+            <el-aside class="layout-aside" >
+                <el-menu style="background-color: #545c64" :default-active="currentIndex" active-text-color="#fff" @select="handleSelect" >
+                    <el-menu-item v-for="c in categoryArr"  :index="c.id"><h2>  {{c.name}} </h2>
+                    </el-menu-item>
+                </el-menu>
+            </el-aside>
+            <el-container>
+                <el-main class="layout-main" >
+
+                    <div>
+                        <el-row class="layout-row" gutter="20">
+                            <el-col span="8"  v-for="f in arr">
+                                <el-card class="layout-card">
+                                    <a :href="'/detail.html?id='+f.id"><h3> {{f.title}}</h3></a>
+                                    <b style="float: right">發文者:{{f.nickname}}</b><br><br>
+                                    <b style="float: right;">{{f.created}}</b>
+                                </el-card>
+                            </el-col>
+                        </el-row>
+                    </div>
+                </el-main>
+
+            </el-container>
+        </el-container>
+    </el-container>
+
+</div>
+
+
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<!-- import Vue before Element -->
+<script src="https://cdn.staticfile.org/vue/2.6.14/vue.min.js"></script>
+<!-- import JavaScript -->
+<script src="https://cdn.staticfile.org/element-ui/2.15.9/index.min.js"></script>
+<script>
+    let v = new Vue({
+        el:"#app",
+        data: {
+            user:{},
+            isLogin:false,
+            arr:[],
+            categoryArr:[],
+            wd:"",
+            currentIndex:"",
+
+
+
+
+
+
+        },
+        methods:{
+            handleSelect(key,keyPath){
+                axios.get("/forum/selectByCid?id="+key).then(function (response) {
+                    v.arr=response.data;
+
+                })
+            },
+
+            search(){
+                axios.get("/forum/selectByWd?wd="+v.wd).then(function (response){
+                    v.arr=response.data;
+                })
+            },
+            logout(){
+              axios.get("/logout").then(function () {
+                  v.isLogin=false;
+              })
+            }
+        },
+        created:function () {
+            //獲取所有論壇文章
+            axios.get("/forum/select").then(function (response) {
+                v.arr = response.data;
+
+            })
+
+            //獲取當前登入對像
+            axios.get("/currentUser").then(function (response) {
+                v.user = response.data;
+                v.isLogin = v.user==""?false:true;
+            })
+
+            //獲取所有分類訊息
+            axios.get("/category/select").then(function (response){
+                v.categoryArr = response.data;
+            })
+
+            //判断地址栏中的参数是id还是wd
+            if (location.search.indexOf("wd") != -1) {
+                axios.get("/forum/selectByWd" + location.search).then(function (response) {
+                    v.arr = response.data;
+                })
+            } else {
+                //从参数中取出id值
+                //初始化过程中的this代表Vue对象
+                this.currentIndex = location.search.split("=")[1];
+
+                //请求和传递过来分类id相关商品
+                axios.get("/forum/selectByCid" + location.search).then(function (response) {
+                    //此处的this代表的并不是Vue对象,所以这里不能用this
+                    v.arr = response.data;
+
+                })
+
+            }
+        }
+    })
+
+
+</script>
+</body>
+</html>

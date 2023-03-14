@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tedu.forum.mapper.CommentMapper">
+
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO comment VALUES(NULL,#{content},#{forumId},#{userId},#{created})
+    </insert>
+
+    <select id="selectByForum" resultType="com.tedu.forum.pojo.vo.CommentVo">
+        SELECT c.id id,content,created,nickname
+        FROM comment c JOIN user u ON c.user_id=u.id
+        WHERE forum_id=#{id}
+    </select>
+
+</mapper>

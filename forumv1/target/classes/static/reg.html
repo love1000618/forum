@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- import CSS -->
+    <link rel="stylesheet" href="https://cdn.staticfile.org/element-ui/2.15.9/theme-chalk/index.css">
+
+    <title>註冊</title>
+</head>
+<body>
+<div>
+    <div style="background: #fff; width: 600px; margin: 60px auto; padding: 20px 50px;">
+        <h1 style="text-align: center; margin: 30px auto;">會員註冊</h1>
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+            <el-form-item label="帳號" prop="username">
+                <el-input v-model="ruleForm.username"></el-input>
+            </el-form-item>
+            <el-form-item label="密碼" prop="password">
+                <el-input v-model="ruleForm.password"></el-input>
+            </el-form-item>
+            <el-form-item label="暱稱" prop="nickname">
+                <el-input v-model="ruleForm.nickname"></el-input>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="reg()">註冊</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+</div>
+<script src="https://cdn.bootcdn.net/ajax/libs/axios/0.21.1/axios.min.js"></script>
+<!-- import Vue before Element -->
+<script src="https://cdn.staticfile.org/vue/2.6.14/vue.min.js"></script>
+<!-- import JavaScript -->
+<script src="https://cdn.staticfile.org/element-ui/2.15.9/index.min.js"></script>
+<script>
+  let v = new Vue({
+    el:"body>div",
+    data:{
+        ruleForm:{username:"",password:"",nickname:""},
+
+          rules: {
+              username: [
+                  { required: true, message: '請輸入帳號', trigger: 'blur' },
+                  { min: 4, max: 15, message: '長度在 4 到 15 個字', trigger: 'blur' }
+              ],
+              password: [
+                  { required: true, message: '請輸入密碼', trigger: 'blur' },
+                  { min: 4, max: 15, message: '長度在 4 到 15 個字', trigger: 'blur' }
+              ],
+              nickname: [
+                  { required: true, message: '請輸入暱稱', trigger: 'blur' },
+                  { min: 4, max: 15, message: '長度在 4 到 15 個字', trigger: 'blur' }
+              ]
+          }
+    },
+    methods: {
+      reg(){
+        axios.post("/reg",v.ruleForm).then(function (response) {
+            if (response.data==3){
+                alert("請輸入註冊信息!");
+          }else if (response.data==2){
+            alert("帳號已存在!");
+          }else {
+                alert("註冊成功!");
+                location.href = "/";
+            }
+        })
+      }
+    }
+  })
+</script>
+</body>
+<style>
+    body{
+        background: #545c64;
+    }
+</style>
+</html>
