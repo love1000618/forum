@@ -49,7 +49,7 @@
               ],
               nickname: [
                   { required: true, message: '請輸入暱稱', trigger: 'blur' },
-                  { min: 4, max: 15, message: '長度在 4 到 15 個字', trigger: 'blur' }
+                  { min: 1, max: 15, message: '長度在 1 到 15 個字', trigger: 'blur' }
               ]
           }
     },
@@ -60,6 +60,10 @@
                 alert("請輸入註冊信息!");
           }else if (response.data==2){
             alert("帳號已存在!");
+          }else if (response.data==4){
+                alert("帳號密碼不能相同");
+          }else if (response.data==5){
+                alert("暱稱已存在!");
           }else {
                 alert("註冊成功!");
                 location.href = "/";

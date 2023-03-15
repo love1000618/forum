@@ -17,4 +17,6 @@ public interface ForumMapper {
     List<ForumIndexVo> selectByCid(int id);
 
     List<ForumIndexVo> selectByWd(String wd);
+
+
 }

@@ -186,7 +186,9 @@
                 }
                 v.f.urls = arr.toString();
                 axios.post("/forum/insert",v.f).then(function (response) {
-                    if (response.data==1){
+                    if(response.data==3){
+                        alert("包含敏感字元");
+                    }else if (response.data==1){
                         alert("發表成功!");
                         location.href="/";
                     }else{

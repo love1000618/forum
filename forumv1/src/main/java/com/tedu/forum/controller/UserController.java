@@ -23,20 +23,26 @@ public class UserController {
     @RequestMapping("/reg")
     public int reg(@RequestBody UserRegDto user) {
         UserVo u = mapper.selectByUsername(user.getUsername());
+        UserVo uNickname = mapper.selectByNickname(user.getNickname());
         if (u != null) {
             return 2;//帳號已存在
         }
         User userEntity = new User();
 
         BeanUtils.copyProperties(user, userEntity);
-        if (userEntity.getUsername().isEmpty()||
+        if(userEntity.getPassword().equals(userEntity.getUsername())){
+            return 4;//帳號密碼不能相同
+        }else if (uNickname !=null){
+            return 5;//暱稱重複
+        }else if (userEntity.getUsername().isEmpty()||
                 userEntity.getPassword().isEmpty()||
                 userEntity.getNickname().isEmpty()){
             return 3;
-        }
-        mapper.insert(userEntity);
+        }else {
+            mapper.insert(userEntity);
 
-        return 1;//註冊成功
+            return 1;//註冊成功
+        }
 
     }
 

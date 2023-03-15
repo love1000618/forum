@@ -12,4 +12,8 @@
         SELECT id,password,nickname FROM user WHERE username=#{username}
     </select>
 
+    <select id="selectByNickname" resultType="com.tedu.forum.pojo.vo.UserVo">
+        SELECT id,password,nickname FROM user WHERE nickname=#{nickname}
+    </select>
+
 </mapper>

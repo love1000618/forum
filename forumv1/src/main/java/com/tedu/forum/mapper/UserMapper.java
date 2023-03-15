@@ -7,4 +7,7 @@ public interface UserMapper {
     UserVo selectByUsername(String username);
 
     int insert(User user);
+
+    UserVo selectByNickname(String nickname);
+
 }
